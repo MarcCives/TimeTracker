@@ -1,0 +1,75 @@
+<configuration>
+  <!-- output para la consola-->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+
+    <encoder>
+      <pattern>
+        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <!-- output para el archivo html-->
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.html.HTMLLayout">
+        <pattern>%relative%thread%mdc%level%logger%msg</pattern>
+      </layout></encoder>
+    <file>testFileWebServer.html</file>
+  </appender>
+
+  <!--Milestone1-->
+  <logger name="Actividad" level="OFF" />
+  <logger name="Client" level="OFF" />
+  <logger name="Intervalo" level="OFF" />
+  <logger name="Visitor.Loader" level="OFF" />
+  <logger name="Visitor.Printer" level="OFF" />
+  <logger name="Actividad.Proyecto" level="OFF" />
+  <logger name="Reloj" level="OFF" />
+  <logger name="Visitor.Saver" level="OFF" />
+  <logger name="Actividad.Tarea" level="OFF" />
+
+
+  <!-- CASO TRACE -->
+  <!--
+  <logger name="Actividad" level="TRACE" />
+  <logger name="Client" level="TRACE" />
+  <logger name="Intervalo" level="TRACE" />
+  <logger name="Visitor.Loader" level="TRACE" />
+  <logger name="Visitor.Printer" level="TRACE" />
+  <logger name="Actividad.Proyecto" level="TRACE" />
+  <logger name="Reloj" level="TRACE" />
+  <logger name="Visitor.Saver" level="TRACE" />
+  <logger name="Actividad.Tarea" level="TRACE" />
+  -->
+
+  <!--Milestone2-->
+  <logger name="Visitor.Searcher" level="ON" />
+
+
+  <!-- CASO TRACE -->
+  <!--
+  <logger name="Visitor.Searcher" level="TRACE" />
+  -->
+
+  <!--Milestone3 WebServer-->
+  <logger name="Visitor.GetTree" level="OFF" />
+  <logger name="MainWebServer" level="OFF" />
+  <logger name="Visitor.SearcherId" level="OFF" />
+  <logger name="WebServer" level="OFF" />
+
+  <!-- CASO TRACE -->
+  <!--
+  <logger name="Visitor.GetTree" level="TRACE" />
+  <logger name="MainWebServer" level="TRACE" />
+  <logger name="Visitor.SearcherId" level="TRACE" />
+  <logger name="WebServer" level="TRACE" />
+  -->
+
+  <!-- Log message level a determinar segun preferencias-->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+
+</configuration>

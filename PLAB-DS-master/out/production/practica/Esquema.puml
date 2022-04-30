@@ -1,0 +1,155 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+class Tarea{
+    - intervalos : ArrayList<Intervalo>
+    +Tarea()
+    +Tarea (nombre : String, padre : Proyecto)
+    +start() : void
+    +stop() : void
+    +getIntervalos() : arrayList<Intervalo>
+    +loadIntervalo(i : Intervalo) : void
+    +getJSON() : JSONObject
+    +acceptVisitor(v : Visitor) : void
+}
+
+class Proyecto{
+    - numActivitadades : int
+    - arrayActividad : ArrayList<Actividad>
+    +Proyecto()
+    +Proyecto(name : string, padre : Proyecto)
+    +añadirActividad(a : Actividad) : void
+    +start() : void
+    +getJSON() : JSONObject
+    +acceptVisitor(v : Visitor) : void
+    +getActividades() : ArrayList<Actividad>
+}
+
+abstract Actividad{
+    #nombre : string
+    #padre : Proyecto
+    #duracion : long
+    #fechaInicial : LocalDateTime
+    #fechaFinalizacion : LocalDateTime
+    +reloj : Reloj
+    +Actividad()
+    +Actividad(name : String, dad : Proyecto)    
+    +//acceptVisitor(v : Visitor) : void//
+    +getNombre() : String
+    +getDuracion() : long
+    +getFechaInicial() : String
+    +getJSON() : JSONObject
+    +getPadre() : Proyecto
+    +load(file : JSONObject) : void
+    +setPadre(dad : Proyecto) : void
+    +getFechaFinalizacion() : String
+    +setFechaFinalizacion(a : LocalDateTime, d : long) :void
+}
+
+class Intervalo {
+    -inicioIntervalo : LocalDateTime
+    -finalIntervalo : LocalDateTime
+    -duracion : long
+    -padre : Tarea
+    -print : Printer
+    +reloj : Reloj
+    +Intervalo()
+    +Intervalo(t : Tarea)
+    +actualizar() : void
+    +getJson() : JSONObject
+    +load(file : JSONObject) : void
+    +setPadre(dad : Tarea) : void
+    +getDuracion() : long
+    +getTarea() : Tarea
+    +getInicioIntervalo() : String
+    +getFinalIntervalo() : String
+    +acceptVisitor(v : Visitor) : void
+    +update(obs : Observable, arg : Object) : void
+}
+
+class Reloj << (S,#FF7700) Singleton>>{
+    -horaActual : LocalDateTime
+    +formatter : DateTimeFormatter
+    -reloj : Reloj
+    -timer : Timer
+    -timerTask : TimerTask
+    -period : long
+    -Reloj()
+    -crearInstancia() : void
+    +getInstancia() : Reloj
+    +stop() : void
+    +getHoraActual() : LocalDateTime
+    +getPeriod() : long
+    +notificar() : void
+    +toString(l : LocalDateTime) : String
+
+}
+
+class Client {
+    + {static} main (args : String[])
+}
+
+interface Visitor{
+    +visitarTarea(t : Tarea) : void
+    +visitarProyecto(p : Proyecto) : void
+    +visitarIntervalo(i : intervalo) : void
+}
+
+
+class Printer{    
+    +Printer()        
+    +visitarTarea(t : Tarea) : void
+    +visitarProyecto(p : Proyecto) : void
+    +visitarIntervalo(i : Intervalo) : void
+}
+
+class Saver{
+    -f : FileWriter
+    -tree : JSONObject
+    +Saver(name : String)
+    +save(root : Proyecto) :void
+    +visitarTarea(t : Tarea) : void
+    +visitarProyecto(p : Proyecto) : void
+    +visitarIntervalo(i : Intervalo) : void
+}
+
+class Loader{
+    -file : JSONObject
+    -padre : Actividad
+    +Loader(name : String)
+    +load(root : Proyecto) : void
+    +visitarTarea(t : Tarea) : void
+    +visitarProyecto(p : Proyecto) : void
+    +visitarIntervalo(i : Intervalo) : void
+}
+
+package java.util <<folder>>{
+    abstract Observable {
+        +addObserver(ob : Observer)
+        +deleteObserver(ob : Observer)
+        +setChanges()
+        +notifyObservers(arg0 : Observable, arg1 : Object)
+    }
+
+    interface  Observer {
+        +update(arg0 : Observable, arg1 : Object)
+    }
+
+}
+
+Proyecto --|> Actividad
+Proyecto  "1"-up-> "0..*" Actividad : actividades
+Tarea "1"-- "0..*" Intervalo
+Observable o-right-> Observer : Observers *
+Reloj -up-|> Observable
+Tarea -up-|> Actividad
+Intervalo -up-|> Observer
+Client -down-> Actividad
+Reloj o--> Reloj
+Client --> Visitor
+Printer ..|> Visitor
+Saver ..|> Visitor
+Loader ..|> Visitor
+Intervalo "1"-- "1" Printer
+@enduml

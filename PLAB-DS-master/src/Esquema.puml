@@ -1,0 +1,256 @@
+@startuml
+ skinparam classAttributeIconSize 0
+ skinparam linetype polyline
+
+ package milestonea <<folder>>{
+ class Tarea{
+     -logger : Logger
+     - intervalos : ArrayList<Intervalo>
+     -active : boolean
+     +Tarea()
+     +Tarea (nombre : String, padre : Proyecto)
+     +start() : void
+     +stop() : void
+     +getIntervalos() : arrayList<Intervalo>
+     +loadIntervalo(i : Intervalo) : void
+     +getJSON() : JSONObject
+     +acceptVisitor(v : Visitor) : void
+     -invariant() : boolean
+     +findActivityById(id : int) : Actividad
+     +getActive() : boolean
+ }
+
+ class Proyecto{
+     -logger : Logger
+     - numActivitadades : int
+     - arrayActividad : ArrayList<Actividad>
+     +Proyecto()
+     +Proyecto(name : string, padre : Proyecto)
+     +anadirActividad(a : Actividad) : void
+     +start() : void
+     +getJSON() : JSONObject
+     +acceptVisitor(v : Visitor) : void
+     +getActividades() : ArrayList<Actividad>
+     -invariant() : boolean
+     +findActivityById(id : int) : Actividad
+ }
+
+ class Identifier << (S,#FF7700) Singleton>>{
+     -idGlobal : int
+     -id : Identifier
+     -crearInstancia() : void
+     +getInstancia() : Identifier
+     +getId() : int
+     +getLastId() : int
+     +setGlobalId(int : id) : void
+ }
+
+ abstract Actividad{
+     -logger : Logger
+     #nombre : string
+     #id : int
+     #padre : Proyecto
+     #duracion : long
+     #fechaInicial : LocalDateTime
+     #fechaFinalizacion : LocalDateTime
+     +reloj : Reloj
+     #tags : ArrayList<String>
+     +Actividad()
+     +Actividad(name : String, dad : Proyecto)
+     +//acceptVisitor(v : Visitor) : void//
+     +findActivityById(id : int) : Actividad
+     +getNombre() : String
+     +getDuracion() : long
+     +getId() : int
+     +getFechaInicial() : String
+     +getJSON() : JSONObject
+     +getPadre() : Proyecto
+     +addTag(tag : String) : void
+     +getTags() : ArrayList<String>
+     +load(file : JSONObject) : void
+     +setPadre(dad : Proyecto) : void
+     +getFechaFinalizacion() : String
+     +setFechaFinalizacion(a : LocalDateTime, d : long) :void
+     +toJson(i : int) : JSONObject
+ }
+
+ class Intervalo {
+     -logger : Logger
+     -inicioIntervalo : LocalDateTime
+     -finalIntervalo : LocalDateTime
+     -duracion : long
+     -padre : Tarea
+     -print : Printer
+     +reloj : Reloj
+     -id: int
+     -active : boolean
+     +Intervalo()
+     +Intervalo(t : Tarea)
+     +actualizar() : void
+     +getJson() : JSONObject
+     +load(file : JSONObject) : void
+     +setPadre(dad : Tarea) : void
+     +getDuracion() : long
+     +getTarea() : Tarea
+     +getInicioIntervalo() : String
+     +getFinalIntervalo() : String
+     +acceptVisitor(v : Visitor) : void
+     +update(obs : Observable, arg : Object) : void
+     +getId() : int
+     +getActive() : boolean
+     +setActiveFalse(false : active) : void
+ }
+
+ class Reloj << (S,#FF7700) Singleton>>{
+     -logger : Logger
+     -horaActual : LocalDateTime
+     +formatter : DateTimeFormatter
+     -reloj : Reloj
+     -timer : Timer
+     -Reloj()
+     -crearInstancia() : void
+     +getInstancia() : Reloj
+     +stop() : void
+     +getHoraActual() : LocalDateTime
+     +notificar() : void
+     +toString(l : LocalDateTime) : String
+ }
+
+ class Client {
+     -logger : Logger
+     + {static} main (args : String[])
+ }
+
+ interface Visitor{
+     +visitarTarea(t : Tarea) : void
+     +visitarProyecto(p : Proyecto) : void
+     +visitarIntervalo(i : intervalo) : void
+ }
+
+ class Printer{
+     -logger : Logger
+     +Printer()
+     +visitarTarea(t : Tarea) : void
+     +visitarProyecto(p : Proyecto) : void
+     +visitarIntervalo(i : Intervalo) : void
+ }
+
+ class Saver{
+     -logger : Logger
+     -fw : FileWriter
+     -tree : JSONObject
+     +Saver(name : String)
+     +save(root : Proyecto) :void
+     +visitarTarea(t : Tarea) : void
+     +visitarProyecto(p : Proyecto) : void
+     +visitarIntervalo(i : Intervalo) : void
+ }
+
+ class Loader{
+     -logger : Logger
+     -file : JSONObject
+     -padre : Actividad
+     +Loader(name : String)
+     +load(root : Proyecto) : void
+     +visitarTarea(t : Tarea) : void
+     +visitarProyecto(p : Proyecto) : void
+     +visitarIntervalo(i : Intervalo) : void
+ }
+
+ }
+ package milestoneb <<folder>>{
+ class Searcher{
+
+    -etiqueta : String
+    -searched : ArrayList<Actividad>
+    -logger : Logger
+    +Searcher()
+    +search(root : Proyecto, tag : String) : ArrayList<Actividad>
+    +visitarTarea(t : Tarea) : void
+    +visitarProyecto(p : Proyecto) : void
+    +visitarIntervalo(i : Intervalo) : void
+ }
+ }
+
+ package webserver <<folder>>{
+ class WebServer{
+    -PORT : int
+    -currentActivity : Actividad
+    -root : Actividad
+    -recientes : JSONArray
+    -recientesID : List<Integer>
+    +WebServer(root : Actividad)
+    +findActivityById(id : int) : Actividad
+    +run() : void
+    -makeBodyAnswer(tokens : String[]) : String
+    +saveData(root : Actividad) : void
+    -makeHeaderAnswer() : String
+ }
+
+ class SearcherId{
+    -id: int
+    -act : Actividad
+    -logger : Logger
+    +SearcherId()
+    +search(root : Proyecto, identificador : int) : Actividad
+    +visitarTarea(t : Tarea) : void
+    +visitarProyecto(p : Proyecto) : void
+    +visitarIntervalo(i : intervalo) : void
+ }
+
+ class MainWebServer{
+    +main(args : String[]) : void
+    +makeTreeCourses() : Actividad
+    +webServer() : void
+
+ }
+
+ class GetTree{
+     -tree : JSONObject
+     -profundidad : int
+     -logger : Logger
+     +GetTree()
+     +toJson(root : Actividad, p : int) : JSONObject
+     +visitarTarea(t : Tarea) : void
+     +visitarProyecto(p : Proyecto) : void
+     +visitarIntervalo(i : Intervalo) : void
+ }
+ }
+
+ package java.util <<folder>>{
+     abstract Observable {
+         +addObserver(ob : Observer)
+         +deleteObserver(ob : Observer)
+         +setChanges()
+         +notifyObservers(arg0 : Observable, arg1 : Object)
+     }
+
+     interface  Observer {
+         +update(arg0 : Observable, arg1 : Object)
+     }
+
+ }
+
+ Proyecto --|> Actividad
+ Proyecto  "1"-up-> "0..*" Actividad : actividades
+ Tarea "1"-- "0..*" Intervalo
+ Observable o-right-> Observer : Observers *
+ Reloj -up-|> Observable
+ Tarea -up-|> Actividad
+ Intervalo -up-|> Observer
+ Client -down-> Actividad
+ Reloj o--> Reloj
+ Identifier o--> Identifier
+ Client --> Visitor
+ Identifier "1..1" -- "1..1" Intervalo
+ Identifier "1..1" -- "1..1" Actividad
+ Printer ..|> Visitor
+ Saver ..|> Visitor
+ Loader ..|> Visitor
+ Searcher ..|> Visitor
+ SearcherId ..|> Visitor
+ GetTree ..|> Visitor
+ WebServer --|> Visitor
+ MainWebServer "1..1" --> "1..1" WebServer
+ Intervalo "1"-- "1" Printer
+ @enduml
